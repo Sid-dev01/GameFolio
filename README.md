@@ -1,35 +1,75 @@
 # GameFolio
 
-GameFolio is a static, interactive developer portfolio built from the PRD in `GameFolio_PRD.docx`. It pairs every portfolio section with a playable mini-game while keeping the actual portfolio content readable without requiring game progress.
+GameFolio is a static, interactive developer portfolio where each section includes a lightweight mini-game and readable portfolio content.
 
-## Builder Decisions
+## What This Project Includes
 
-### 1. Tech stack
+1. Hero particle warp scene (Three.js, lazy-loaded)
+2. Five canvas mini-games (Pong, Tetris variant, Runner, Snake, Shooter)
+3. Scroll-snap single-page portfolio sections
+4. Keyboard + touch controls, local high-score persistence, reduced-motion support
+5. Static deploy output (`dist/`) with no backend dependency
 
-The build uses Vite + vanilla TypeScript. React and Svelte are both productive, but the PRD's gameplay work benefits from direct ownership of requestAnimationFrame loops, canvas state, and pointer input without a component runtime between the game engine and the pixels. Vite keeps the static deployment target simple and gives clean code splitting for the lazy Three.js hero.
+## Tech Stack
 
-### 2. Animation library
+1. Vite + TypeScript (strict mode)
+2. GSAP for section and entrance motion
+3. Three.js only for hero WebGL effect (code-split)
+4. Native Canvas2D for the game modules
 
-GSAP is the primary animation library for entrances and scroll-linked polish because it is mature, predictable, and easy to disable for `prefers-reduced-motion`. CSS transitions are the fallback for reduced-motion users and for all essential UI states.
+## Project Structure
 
-### 3. Game renderers
+`src/main.ts`: App bootstrap, section wiring, and game setup  
+`src/data/portfolio.ts`: Name, bio, skills, projects, experience, socials  
+`src/engine/`: Game loop, input manager, sound engine  
+`src/style/globals.css`: Design tokens, layout, and section styling  
+`vercel.json`: Hosting headers/build settings for Vercel
 
-Hero uses lazy-loaded Three.js WebGL points so the warp field can scale to thousands of particles. Pong, Tetris, Runner, Snake, and Shooter use Canvas2D because their rules are simple, their visual language is pixel/arcade based, and native canvas keeps the bundle smaller than a full game framework.
-
-### 4. Scroll strategy
-
-The page uses native CSS scroll-snap and IntersectionObserver. It avoids scroll hijacking, keeps iOS momentum scrolling intact, and makes every section reachable by keyboard, touch, wheel, or browser search.
-
-### 5. Performance budget
-
-The initial app loads static HTML, CSS, TypeScript, and GSAP. Three.js is dynamically imported only for the hero canvas and capped by device memory and pixel ratio. Canvas games start only when their section is visible, so off-screen sections do not keep rendering.
-
-## Commands
+## Quick Start
 
 ```bash
 npm.cmd install
 npm.cmd run dev
-npm.cmd run build
 ```
 
-Portfolio content is centralized in `src/data/portfolio.ts`.
+Local dev URL is shown by Vite in terminal output.
+
+## Production Build
+
+```bash
+npm.cmd run build
+npm.cmd run preview
+```
+
+## Customize Portfolio Content
+
+Update the content source in [src/data/portfolio.ts](/d:/Github Project/Game/src/data/portfolio.ts):
+
+1. `name`, `role`, `tagline`, `email`, `location`
+2. `skills` and radar values
+3. `projects` and links
+4. `experience` timeline entries
+5. social links and stat cards
+
+## Vercel Deployment
+
+This repo is ready for Vercel static hosting.
+
+1. Push this folder to GitHub.
+2. Import the repo in Vercel.
+3. Keep defaults, or verify:
+   `Build Command`: `npm run build`
+   `Output Directory`: `dist`
+4. Deploy.
+
+`vercel.json` already includes:
+
+1. Build/output settings for Vite static output
+2. Long-term caching for `/assets/*`
+3. Security headers (CSP, nosniff, referrer policy)
+
+## Notes
+
+1. `index.html` is the main entry.
+2. `index.htm` is included for compatibility redirects.
+3. If PowerShell blocks `npm`, use `npm.cmd` commands (already used above).
